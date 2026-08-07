@@ -29,7 +29,7 @@ export function TodayView() {
       <header className="fade-up stack" style={{ gap: '0.35rem' }}>
         <div className="eyebrow">Today grows with you</div>
         <h1 className="brand-mark" style={{ fontSize: 'clamp(2.2rem, 7vw, 3.2rem)' }}>
-          TrenTree
+          Cal AI
         </h1>
         <p>
           Hi {profile.name || 'friend'} — {remaining} kcal left ·{' '}

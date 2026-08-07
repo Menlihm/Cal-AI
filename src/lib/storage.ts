@@ -1,6 +1,7 @@
 import type { AppState, Profile } from '../types'
 
-const KEY = 'trentree.v1'
+const KEY = 'calai.v1'
+const LEGACY_KEY = 'trentree.v1'
 
 export const defaultProfile: Profile = {
   name: '',
@@ -28,7 +29,7 @@ export const defaultState: AppState = {
 
 export function loadState(): AppState {
   try {
-    const raw = localStorage.getItem(KEY)
+    const raw = localStorage.getItem(KEY) ?? localStorage.getItem(LEGACY_KEY)
     if (!raw) return structuredClone(defaultState)
     const parsed = JSON.parse(raw) as AppState
     return {
@@ -45,6 +46,7 @@ export function loadState(): AppState {
 
 export function saveState(state: AppState): void {
   localStorage.setItem(KEY, JSON.stringify(state))
+  localStorage.removeItem(LEGACY_KEY)
 }
 
 export function todayKey(d = new Date()): string {

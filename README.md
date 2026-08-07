@@ -1,4 +1,4 @@
-# TrenTree
+# Cal AI
 
 Daily nutrition companion for **healthy weight loss**: calorie & macro targets, vitamin/mineral checklists, gentle eat reminders, photo check-ins, and menstrual-cycle-aware food ideas.
 
@@ -26,4 +26,4 @@ npm run preview
 
 ## Note
 
-TrenTree is educational self-tracking — not medical advice. Cycle food ideas synthesize common themes from micronutrient RDAs and menstrual-nutrition education; individual needs vary.
+Cal AI is educational self-tracking — not medical advice. Cycle food ideas synthesize common themes from micronutrient RDAs and menstrual-nutrition education; individual needs vary.

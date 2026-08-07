@@ -126,7 +126,7 @@ export function YouView() {
       <section className="panel stack fade-up-delay">
         <h2 style={{ fontSize: '1.15rem' }}>Reminders</h2>
         <p className="tiny">
-          TrenTree nudges you in-app (and via browser notifications if allowed) when it’s been too
+          Cal AI nudges you in-app (and via browser notifications if allowed) when it’s been too
           long without a bite.
         </p>
         <div className="field">
@@ -199,7 +199,7 @@ export function YouView() {
         type="button"
         className="btn btn-danger"
         onClick={() => {
-          if (confirm('Reset all TrenTree data on this device?')) resetAll()
+          if (confirm('Reset all Cal AI data on this device?')) resetAll()
         }}
       >
         Reset local data
