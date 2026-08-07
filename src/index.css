@@ -732,6 +732,11 @@ p {
   gap: 10px;
 }
 
+/* Exactly four tiles read better as a 2×2 block than 3 + 1 */
+.stat-grid:has(> :nth-child(4):last-child) {
+  grid-template-columns: repeat(2, 1fr);
+}
+
 .stat-tile {
   padding: 14px 12px;
   border-radius: var(--r-md);
