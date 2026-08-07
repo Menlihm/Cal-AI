@@ -6,6 +6,7 @@ import {
   type CSSProperties,
   type ReactNode,
 } from 'react'
+import { createPortal } from 'react-dom'
 import { Icon, type IconName } from './Icon'
 
 /* ------------------------------------------------------------------ count-up */
@@ -492,7 +493,10 @@ export function Sheet({
   }, [open, onClose])
 
   if (!open) return null
-  return (
+
+  // Portal to body: animated ancestors create containing blocks that would
+  // otherwise trap this fixed-position overlay inside the scrolling screen.
+  return createPortal(
     <div className="sheet-backdrop" onClick={onClose} role="dialog" aria-modal="true">
       <div className="sheet" onClick={(e) => e.stopPropagation()}>
         <div className="sheet-grabber" />
@@ -508,7 +512,8 @@ export function Sheet({
         )}
         {children}
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }
 
