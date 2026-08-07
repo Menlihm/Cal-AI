@@ -151,6 +151,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const resetAll = useCallback(() => {
+    localStorage.removeItem('calai.v1')
     localStorage.removeItem('trentree.v1')
     setState(loadState())
   }, [])

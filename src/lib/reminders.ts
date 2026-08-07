@@ -64,10 +64,10 @@ export async function ensureNotificationPermission(): Promise<boolean> {
 export function sendEatReminder(body: string): void {
   if (!('Notification' in window) || Notification.permission !== 'granted') return
   try {
-    new Notification('TrenTree — time for a small bite', {
+    new Notification('Cal AI — time for a small bite', {
       body,
       icon: '/favicon.svg',
-      tag: 'trentree-eat-reminder',
+      tag: 'calai-eat-reminder',
     })
   } catch {
     // ignore unsupported environments

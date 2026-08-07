@@ -39,7 +39,7 @@ export function Onboarding() {
       <div className="fade-up">
         <div className="eyebrow">Daily nourishment</div>
         <div className="brand-mark" style={{ fontSize: 'clamp(3rem, 10vw, 5rem)', lineHeight: 0.9 }}>
-          TrenTree
+          Cal AI
         </div>
       </div>
 
@@ -281,7 +281,7 @@ export function Onboarding() {
             className="btn btn-primary"
             onClick={() => completeOnboarding(form)}
           >
-            Start growing with TrenTree
+            Start with Cal AI
           </button>
         )}
       </div>
