@@ -9,7 +9,7 @@ import {
 import { ensureNotificationPermission } from '../lib/reminders'
 import type { ActivityLevel, GoalPace, Sex } from '../types'
 
-export function YouView() {
+export function YouView({ onOpenPhotos }: { onOpenPhotos?: () => void }) {
   const { state, updateProfile, resetAll } = useApp()
   const { profile } = state
   const targets = calcDailyTargets(profile)
@@ -171,6 +171,20 @@ export function YouView() {
         >
           Enable browser notifications
         </button>
+      </section>
+
+      <section className="panel stack fade-up">
+        <h2 style={{ fontSize: '1.15rem' }}>Mobile app</h2>
+        <p className="tiny">
+          Cal AI is a installable web app (PWA). On your phone, open this site in Chrome or Safari,
+          then use <strong>Add to Home Screen</strong> / <strong>Install app</strong> for a
+          full-screen mobile experience with GPS walk tracking.
+        </p>
+        {onOpenPhotos && (
+          <button type="button" className="btn btn-secondary" onClick={onOpenPhotos}>
+            Open photo check-ins
+          </button>
+        )}
       </section>
 
       <section className="panel-solid stack fade-up">

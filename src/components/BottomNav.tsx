@@ -24,23 +24,22 @@ const TABS: { id: TabId; label: string; icon: ReactNode }[] = [
     ),
   },
   {
+    id: 'move',
+    label: 'Move',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M13 4a2 2 0 1 0-2 0" strokeLinecap="round" />
+        <path d="M7 21l3-7 2 2 2-6 3 4 3 7" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+  {
     id: 'cycle',
     label: 'Cycle',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <circle cx="12" cy="12" r="8" />
         <path d="M12 4a8 8 0 0 1 8 8" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  {
-    id: 'photos',
-    label: 'Photos',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <rect x="3" y="5" width="18" height="14" rx="3" />
-        <circle cx="9" cy="11" r="2" />
-        <path d="m13 15 2-2 4 4" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     ),
   },

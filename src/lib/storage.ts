@@ -18,6 +18,7 @@ export const defaultProfile: Profile = {
   lastPeriodStart: null,
   reminderMinutes: 180,
   remindersEnabled: true,
+  stepGoal: 8000,
   onboardingComplete: false,
 }
 
@@ -32,11 +33,22 @@ export function loadState(): AppState {
     const raw = localStorage.getItem(KEY) ?? localStorage.getItem(LEGACY_KEY)
     if (!raw) return structuredClone(defaultState)
     const parsed = JSON.parse(raw) as AppState
+    const logs: AppState['logs'] = {}
+    for (const [key, log] of Object.entries(parsed.logs ?? {})) {
+      logs[key] = {
+        date: log.date ?? key,
+        foods: log.foods ?? [],
+        vitaminsTaken: log.vitaminsTaken ?? [],
+        waterGlasses: log.waterGlasses ?? 0,
+        steps: log.steps ?? 0,
+        workouts: log.workouts ?? [],
+      }
+    }
     return {
       ...defaultState,
       ...parsed,
       profile: { ...defaultProfile, ...parsed.profile },
-      logs: parsed.logs ?? {},
+      logs,
       photos: parsed.photos ?? [],
     }
   } catch {
