@@ -16,7 +16,10 @@ const TABS: { id: TabId; label: string; icon: ReactNode }[] = [
     label: 'Eat',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M4 12h16M12 4v16M7 7l10 10M17 7 7 17" strokeLinecap="round" />
+        <path d="M8 3v8a2 2 0 0 0 4 0V3" strokeLinecap="round" />
+        <path d="M10 13v8" strokeLinecap="round" />
+        <path d="M16 3v18" strokeLinecap="round" />
+        <path d="M16 3c2 2 2 5 0 7" strokeLinecap="round" />
       </svg>
     ),
   },
