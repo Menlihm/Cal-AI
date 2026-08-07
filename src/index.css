@@ -174,6 +174,7 @@ p {
   position: relative;
   z-index: 1;
   width: min(560px, 100%);
+  max-width: 100%;
   margin: 0 auto;
   padding: calc(var(--safe-top) + 14px) 16px calc(var(--tabbar-h) + var(--safe-bottom) + 28px);
 }
@@ -190,6 +191,13 @@ p {
 .stack-lg {
   display: grid;
   gap: 18px;
+}
+
+/* Grid items default to min-width:auto, which lets horizontally scrolling
+   rows inflate the whole column. Cap it so the layout stays viewport-width. */
+.stack > *,
+.stack-lg > * {
+  min-width: 0;
 }
 
 .row {
@@ -460,6 +468,7 @@ p {
   display: flex;
   gap: 8px;
   overflow-x: auto;
+  min-width: 0;
   padding-bottom: 4px;
   margin: 0 -16px;
   padding-inline: 16px;
@@ -883,9 +892,16 @@ p {
   display: flex;
   gap: 10px;
   overflow-x: auto;
+  min-width: 0;
   margin: 0 -16px;
   padding: 2px 16px 6px;
   scrollbar-width: none;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+}
+
+.food-scroll > * {
+  scroll-snap-align: start;
 }
 
 .food-scroll::-webkit-scrollbar {
@@ -938,6 +954,25 @@ p {
   display: grid;
   place-items: center;
   overflow: hidden;
+}
+
+/* Tinted food glyphs, contrast-corrected per theme */
+.food-thumb {
+  background: linear-gradient(
+    140deg,
+    color-mix(in srgb, var(--food-tint) 34%, transparent),
+    color-mix(in srgb, var(--food-tint) 14%, transparent)
+  );
+  color: color-mix(in srgb, var(--food-tint) 72%, #10231b);
+}
+
+[data-theme='dark'] .food-thumb {
+  background: linear-gradient(
+    140deg,
+    color-mix(in srgb, var(--food-tint) 26%, transparent),
+    color-mix(in srgb, var(--food-tint) 8%, transparent)
+  );
+  color: color-mix(in srgb, var(--food-tint) 86%, #ffffff);
 }
 
 /* ---------- progress dots & bars ---------- */

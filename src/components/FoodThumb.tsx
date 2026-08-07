@@ -32,14 +32,11 @@ export function FoodThumb({
 
   return (
     <span
-      className={cls}
-      style={{
-        background: `linear-gradient(140deg, color-mix(in srgb, ${useTint} 30%, transparent), color-mix(in srgb, ${useTint} 12%, transparent))`,
-        color: useTint,
-      }}
+      className={`${cls} food-thumb`}
+      style={{ ['--food-tint' as string]: useTint }}
       aria-hidden="true"
     >
-      <Icon name={useIcon} size={iconSize} strokeWidth={1.8} />
+      <Icon name={useIcon} size={iconSize} strokeWidth={1.9} />
     </span>
   )
 }
