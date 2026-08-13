@@ -26,6 +26,7 @@ export interface Profile {
   lastPeriodStart: string | null
   reminderMinutes: number
   remindersEnabled: boolean
+  stepGoal: number
   onboardingComplete: boolean
 }
 
@@ -57,6 +58,25 @@ export interface FoodEntry {
   note?: string
 }
 
+export interface GeoPoint {
+  lat: number
+  lng: number
+  t: number
+}
+
+export interface WorkoutActivity {
+  id: string
+  activityId: string
+  label: string
+  minutes: number
+  caloriesBurned: number
+  steps?: number
+  distanceKm?: number
+  at: string
+  path?: GeoPoint[]
+  source: 'manual' | 'gps_walk' | 'steps'
+}
+
 export interface PhotoCheckIn {
   id: string
   date: string
@@ -70,6 +90,8 @@ export interface DayLog {
   foods: FoodEntry[]
   vitaminsTaken: string[]
   waterGlasses: number
+  steps: number
+  workouts: WorkoutActivity[]
 }
 
 export interface AppState {
@@ -78,7 +100,7 @@ export interface AppState {
   photos: PhotoCheckIn[]
 }
 
-export type TabId = 'today' | 'eat' | 'cycle' | 'photos' | 'you'
+export type TabId = 'today' | 'eat' | 'move' | 'cycle' | 'you'
 
 export interface CravingSuggestion {
   title: string

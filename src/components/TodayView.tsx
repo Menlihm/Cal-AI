@@ -2,8 +2,15 @@ import { useApp } from '../context/AppContext'
 import { calcDailyTargets, getVitaminTargets } from '../lib/nutrition'
 import { getCravingSuggestions, getCyclePhase, phaseBlurb, phaseLabel } from '../lib/cycle'
 import { formatDuration, minutesSinceLastBite } from '../lib/reminders'
+import { projectGoalSpeed, totalBurnedToday } from '../lib/fitness'
 
-export function TodayView() {
+export function TodayView({
+  onOpenPhotos,
+  onOpenMove,
+}: {
+  onOpenPhotos?: () => void
+  onOpenMove?: () => void
+}) {
   const { state, todayLog, nudgeMessage, toggleVitamin, addWater, addFood } = useApp()
   const { profile } = state
   const targets = calcDailyTargets(profile)
@@ -16,13 +23,22 @@ export function TodayView() {
     }),
     { calories: 0, proteinG: 0, carbsG: 0, fatG: 0 },
   )
-  const remaining = Math.max(0, targets.calories - eaten.calories)
-  const pct = Math.min(100, Math.round((eaten.calories / targets.calories) * 100))
+  const burn = totalBurnedToday(
+    todayLog.workouts ?? [],
+    todayLog.steps ?? 0,
+    profile.weightKg,
+  )
+  // Exercise calories add back to the daily budget
+  const remaining = Math.max(0, targets.calories - eaten.calories + burn.total)
+  const budget = targets.calories + burn.total
+  const pct = Math.min(100, Math.round((eaten.calories / Math.max(budget, 1)) * 100))
   const vitamins = getVitaminTargets(profile.sex, profile.age)
   const phase = getCyclePhase(profile)
   const suggestions = getCravingSuggestions(phase)
   const mins = minutesSinceLastBite(todayLog)
   const waterGoal = Math.max(6, Math.round(targets.waterMl / 250))
+  const stepGoal = profile.stepGoal || 8000
+  const goalHint = projectGoalSpeed(profile, burn.total)[2]
 
   return (
     <div className="stack-lg">
@@ -32,7 +48,7 @@ export function TodayView() {
           Cal AI
         </h1>
         <p>
-          Hi {profile.name || 'friend'} — {remaining} kcal left ·{' '}
+          Hi {profile.name || 'friend'} — {remaining} kcal left · burned {burn.total} ·{' '}
           {profile.tracksCycle && phase !== 'unknown'
             ? `${phaseLabel(phase)} phase`
             : 'steady fuel day'}
@@ -75,6 +91,20 @@ export function TodayView() {
           </div>
           <div className="stat-grid" style={{ width: '100%' }}>
             <div className="stat">
+              <strong>{Math.round(eaten.calories)}</strong>
+              <span>eaten</span>
+            </div>
+            <div className="stat">
+              <strong>{burn.total}</strong>
+              <span>burned</span>
+            </div>
+            <div className="stat">
+              <strong>{todayLog.steps || 0}</strong>
+              <span>steps</span>
+            </div>
+          </div>
+          <div className="stat-grid" style={{ width: '100%' }}>
+            <div className="stat">
               <strong>{Math.round(eaten.proteinG)}g</strong>
               <span>Protein / {targets.proteinG}g</span>
             </div>
@@ -91,10 +121,18 @@ export function TodayView() {
             Last bite:{' '}
             {mins == null ? 'none yet today' : `${formatDuration(mins)} ago`}
             {' · '}Water {todayLog.waterGlasses}/{waterGoal} glasses
+            {' · '}Steps {todayLog.steps || 0}/{stepGoal}
           </p>
-          <button type="button" className="btn btn-secondary" onClick={addWater}>
-            + Glass of water
-          </button>
+          <div className="row">
+            <button type="button" className="btn btn-secondary" onClick={addWater}>
+              + Glass of water
+            </button>
+            {onOpenMove && (
+              <button type="button" className="btn btn-primary" onClick={onOpenMove}>
+                Track walk / steps
+              </button>
+            )}
+          </div>
         </section>
 
         <section className="panel fade-up-delay stack">
@@ -128,6 +166,26 @@ export function TodayView() {
               <p className="tiny">Focus: {s.nutrients.join(' · ')}</p>
             </div>
           ))}
+          {goalHint && (
+            <div className="suggestion">
+              <h3>Goal speed tip</h3>
+              <p className="tiny">
+                {goalHint.label}: about <strong>{goalHint.weeks} weeks</strong> to goal (~
+                {goalHint.weeklyKg} kg/week) if you keep a ~{goalHint.combinedDaily} kcal daily
+                deficit.
+              </p>
+              {onOpenMove && (
+                <button type="button" className="btn btn-secondary" onClick={onOpenMove}>
+                  See all pace scenarios
+                </button>
+              )}
+            </div>
+          )}
+          {onOpenPhotos && (
+            <button type="button" className="btn btn-ghost" onClick={onOpenPhotos}>
+              Daily photo check-in
+            </button>
+          )}
         </section>
       </div>
 

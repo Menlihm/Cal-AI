@@ -7,7 +7,14 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import type { AppState, DayLog, FoodEntry, PhotoCheckIn, Profile } from '../types'
+import type {
+  AppState,
+  DayLog,
+  FoodEntry,
+  PhotoCheckIn,
+  Profile,
+  WorkoutActivity,
+} from '../types'
 import { loadState, saveState, todayKey } from '../lib/storage'
 import { ensureNotificationPermission, sendEatReminder, shouldNudge } from '../lib/reminders'
 
@@ -21,6 +28,10 @@ interface AppContextValue {
   removeFood: (id: string) => void
   toggleVitamin: (id: string) => void
   addWater: () => void
+  setSteps: (steps: number) => void
+  addSteps: (delta: number) => void
+  addWorkout: (workout: Omit<WorkoutActivity, 'id' | 'at'> & { at?: string }) => void
+  removeWorkout: (id: string) => void
   addPhoto: (photo: Omit<PhotoCheckIn, 'id'>) => void
   removePhoto: (id: string) => void
   markPeriodStarted: (date: string) => void
@@ -31,7 +42,7 @@ interface AppContextValue {
 const AppContext = createContext<AppContextValue | null>(null)
 
 function emptyLog(date: string): DayLog {
-  return { date, foods: [], vitaminsTaken: [], waterGlasses: 0 }
+  return { date, foods: [], vitaminsTaken: [], waterGlasses: 0, steps: 0, workouts: [] }
 }
 
 export function AppProvider({ children }: { children: ReactNode }) {
@@ -64,7 +75,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     tick()
     const id = window.setInterval(tick, 60_000)
     return () => window.clearInterval(id)
-  }, [state.profile.onboardingComplete, state.profile.remindersEnabled, state.profile.reminderMinutes, todayLog.foods.length])
+  }, [
+    state.profile.onboardingComplete,
+    state.profile.remindersEnabled,
+    state.profile.reminderMinutes,
+    todayLog.foods.length,
+  ])
 
   const updateProfile = useCallback((patch: Partial<Profile>) => {
     setState((s) => ({ ...s, profile: { ...s.profile, ...patch } }))
@@ -132,6 +148,56 @@ export function AppProvider({ children }: { children: ReactNode }) {
     mutateToday((log) => ({ ...log, waterGlasses: log.waterGlasses + 1 }))
   }, [mutateToday])
 
+  const setSteps = useCallback(
+    (steps: number) => {
+      mutateToday((log) => ({ ...log, steps: Math.max(0, Math.round(steps)) }))
+    },
+    [mutateToday],
+  )
+
+  const addSteps = useCallback(
+    (delta: number) => {
+      mutateToday((log) => ({
+        ...log,
+        steps: Math.max(0, Math.round((log.steps ?? 0) + delta)),
+      }))
+    },
+    [mutateToday],
+  )
+
+  const addWorkout = useCallback(
+    (workout: Omit<WorkoutActivity, 'id' | 'at'> & { at?: string }) => {
+      mutateToday((log) => {
+        const entry: WorkoutActivity = {
+          ...workout,
+          id: crypto.randomUUID(),
+          at: workout.at ?? new Date().toISOString(),
+        }
+        // Fold walk steps into the daily total
+        const nextSteps =
+          entry.steps != null
+            ? (log.steps ?? 0) + entry.steps
+            : (log.steps ?? 0)
+        return {
+          ...log,
+          steps: nextSteps,
+          workouts: [...(log.workouts ?? []), entry],
+        }
+      })
+    },
+    [mutateToday],
+  )
+
+  const removeWorkout = useCallback(
+    (id: string) => {
+      mutateToday((log) => ({
+        ...log,
+        workouts: (log.workouts ?? []).filter((w) => w.id !== id),
+      }))
+    },
+    [mutateToday],
+  )
+
   const addPhoto = useCallback((photo: Omit<PhotoCheckIn, 'id'>) => {
     setState((s) => ({
       ...s,
@@ -167,6 +233,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       removeFood,
       toggleVitamin,
       addWater,
+      setSteps,
+      addSteps,
+      addWorkout,
+      removeWorkout,
       addPhoto,
       removePhoto,
       markPeriodStarted,
@@ -183,6 +253,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       removeFood,
       toggleVitamin,
       addWater,
+      setSteps,
+      addSteps,
+      addWorkout,
+      removeWorkout,
       addPhoto,
       removePhoto,
       markPeriodStarted,
