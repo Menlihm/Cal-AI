@@ -16,39 +16,35 @@ function Shell() {
   const [showPhotos, setShowPhotos] = useState(false)
 
   if (!state.profile.onboardingComplete) {
-    return (
-      <div className="app-shell">
-        <Onboarding />
-      </div>
-    )
+    return <Onboarding />
   }
 
+  const openPhotos = () => setShowPhotos(true)
+  const tabs: TabId[] =
+    state.profile.sex === 'female'
+      ? ['today', 'eat', 'move', 'cycle', 'you']
+      : ['today', 'eat', 'move', 'you']
+
   return (
-    <div className="app-shell">
+    <div className="shell">
       {showPhotos ? (
-        <>
-          <button
-            type="button"
-            className="btn btn-ghost fade-up"
-            style={{ marginBottom: '0.75rem' }}
-            onClick={() => setShowPhotos(false)}
-          >
-            ← Back
-          </button>
-          <PhotosView />
-        </>
+        <PhotosView onBack={() => setShowPhotos(false)} />
       ) : (
         <>
-          {tab === 'today' && <TodayView onOpenPhotos={() => setShowPhotos(true)} onOpenMove={() => setTab('move')} />}
+          {tab === 'today' && (
+            <TodayView
+              onOpenPhotos={openPhotos}
+              onOpenMove={() => setTab('move')}
+              onOpenEat={() => setTab('eat')}
+            />
+          )}
           {tab === 'eat' && <EatView />}
           {tab === 'move' && <MoveView />}
           {tab === 'cycle' && <CycleView />}
-          {tab === 'you' && (
-            <YouView onOpenPhotos={() => setShowPhotos(true)} />
-          )}
+          {tab === 'you' && <YouView onOpenPhotos={openPhotos} />}
         </>
       )}
-      {!showPhotos && <BottomNav tab={tab} onChange={setTab} />}
+      {!showPhotos && <BottomNav tab={tab} onChange={setTab} tabs={tabs} />}
     </div>
   )
 }

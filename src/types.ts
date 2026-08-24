@@ -11,6 +11,34 @@ export type GoalPace = 'gentle' | 'steady' | 'focused'
 
 export type CyclePhase = 'menstrual' | 'follicular' | 'ovulatory' | 'luteal' | 'unknown'
 
+export type DietPreference = 'omnivore' | 'vegetarian' | 'vegan' | 'pescatarian'
+
+export type FitnessGoal = 'lose_fat' | 'build_muscle' | 'maintain' | 'recomp'
+
+export type WorkoutType =
+  | 'walking'
+  | 'running'
+  | 'cycling'
+  | 'strength'
+  | 'yoga'
+  | 'swimming'
+  | 'dance'
+  | 'hiking'
+
+export type Units = 'metric' | 'imperial'
+
+export type ThemePref = 'system' | 'light' | 'dark'
+
+export type AllergyTag =
+  | 'gluten'
+  | 'dairy'
+  | 'nuts'
+  | 'eggs'
+  | 'soy'
+  | 'shellfish'
+  | 'fish'
+  | 'sesame'
+
 export interface Profile {
   name: string
   sex: Sex
@@ -28,6 +56,13 @@ export interface Profile {
   remindersEnabled: boolean
   stepGoal: number
   onboardingComplete: boolean
+  dietPreference: DietPreference
+  fitnessGoal: FitnessGoal
+  workoutTypes: WorkoutType[]
+  allergies: AllergyTag[]
+  units: Units
+  theme: ThemePref
+  avatarDataUrl: string | null
 }
 
 export interface MacroTargets {
@@ -56,6 +91,10 @@ export interface FoodEntry {
   fatG: number
   at: string
   note?: string
+  category?: string
+  iconKey?: string
+  servings?: number
+  photoDataUrl?: string
 }
 
 export interface GeoPoint {
@@ -85,6 +124,11 @@ export interface PhotoCheckIn {
   weightKg?: number
 }
 
+export interface WeightEntry {
+  date: string
+  kg: number
+}
+
 export interface DayLog {
   date: string
   foods: FoodEntry[]
@@ -98,6 +142,9 @@ export interface AppState {
   profile: Profile
   logs: Record<string, DayLog>
   photos: PhotoCheckIn[]
+  weights: WeightEntry[]
+  favorites: string[]
+  recents: string[]
 }
 
 export type TabId = 'today' | 'eat' | 'move' | 'cycle' | 'you'

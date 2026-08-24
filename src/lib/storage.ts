@@ -20,12 +20,22 @@ export const defaultProfile: Profile = {
   remindersEnabled: true,
   stepGoal: 8000,
   onboardingComplete: false,
+  dietPreference: 'omnivore',
+  fitnessGoal: 'lose_fat',
+  workoutTypes: ['walking'],
+  allergies: [],
+  units: 'metric',
+  theme: 'system',
+  avatarDataUrl: null,
 }
 
 export const defaultState: AppState = {
   profile: defaultProfile,
   logs: {},
   photos: [],
+  weights: [],
+  favorites: [],
+  recents: [],
 }
 
 export function loadState(): AppState {
@@ -50,6 +60,9 @@ export function loadState(): AppState {
       profile: { ...defaultProfile, ...parsed.profile },
       logs,
       photos: parsed.photos ?? [],
+      weights: parsed.weights ?? [],
+      favorites: parsed.favorites ?? [],
+      recents: parsed.recents ?? [],
     }
   } catch {
     return structuredClone(defaultState)

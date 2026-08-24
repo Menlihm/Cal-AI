@@ -18,6 +18,8 @@ import type {
 import { loadState, saveState, todayKey } from '../lib/storage'
 import { ensureNotificationPermission, sendEatReminder, shouldNudge } from '../lib/reminders'
 
+type ResolvedTheme = 'light' | 'dark'
+
 interface AppContextValue {
   state: AppState
   today: string
@@ -35,8 +37,11 @@ interface AppContextValue {
   addPhoto: (photo: Omit<PhotoCheckIn, 'id'>) => void
   removePhoto: (id: string) => void
   markPeriodStarted: (date: string) => void
+  recordWeight: (kg: number, date?: string) => void
+  toggleFavorite: (foodId: string) => void
   resetAll: () => void
   nudgeMessage: string | null
+  theme: ResolvedTheme
 }
 
 const AppContext = createContext<AppContextValue | null>(null)
@@ -49,10 +54,31 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AppState>(() => loadState())
   const today = todayKey()
   const [nudgeMessage, setNudgeMessage] = useState<string | null>(null)
+  const [systemDark, setSystemDark] = useState(
+    () => window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false,
+  )
 
   useEffect(() => {
     saveState(state)
   }, [state])
+
+  useEffect(() => {
+    const mq = window.matchMedia?.('(prefers-color-scheme: dark)')
+    if (!mq) return
+    const onChange = (e: MediaQueryListEvent) => setSystemDark(e.matches)
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [])
+
+  const theme: ResolvedTheme =
+    state.profile.theme === 'system' ? (systemDark ? 'dark' : 'light') : state.profile.theme
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', theme === 'dark' ? '#07090d' : '#f2f4f7')
+  }, [theme])
 
   const todayLog = state.logs[today] ?? emptyLog(today)
 
@@ -114,6 +140,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
           },
         ],
       }))
+      if (food.iconKey) {
+        setState((s) => ({
+          ...s,
+          recents: [food.iconKey!, ...s.recents.filter((r) => r !== food.iconKey)].slice(0, 12),
+        }))
+      }
       setNudgeMessage(null)
     },
     [mutateToday],
@@ -216,6 +248,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }))
   }, [])
 
+  const recordWeight = useCallback((kg: number, date?: string) => {
+    if (!Number.isFinite(kg) || kg <= 0) return
+    const day = date ?? todayKey()
+    setState((s) => {
+      const rest = s.weights.filter((w) => w.date !== day)
+      const weights = [...rest, { date: day, kg }].sort((a, b) => a.date.localeCompare(b.date))
+      return { ...s, weights, profile: { ...s.profile, weightKg: kg } }
+    })
+  }, [])
+
+  const toggleFavorite = useCallback((foodId: string) => {
+    setState((s) => ({
+      ...s,
+      favorites: s.favorites.includes(foodId)
+        ? s.favorites.filter((f) => f !== foodId)
+        : [...s.favorites, foodId],
+    }))
+  }, [])
+
   const resetAll = useCallback(() => {
     localStorage.removeItem('calai.v1')
     localStorage.removeItem('trentree.v1')
@@ -240,8 +291,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       addPhoto,
       removePhoto,
       markPeriodStarted,
+      recordWeight,
+      toggleFavorite,
       resetAll,
       nudgeMessage,
+      theme,
     }),
     [
       state,
@@ -260,8 +314,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       addPhoto,
       removePhoto,
       markPeriodStarted,
+      recordWeight,
+      toggleFavorite,
       resetAll,
       nudgeMessage,
+      theme,
     ],
   )
 
